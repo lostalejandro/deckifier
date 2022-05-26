@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# This file is part of steamos-devkit
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright © 2017-2018 Collabora Ltd
+#
+# This package is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This package is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this package.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+# Sample script to install ssh keys that were approved by the
+# approve-ssh-key script.
+#
+# A script or binary (written in any language) named install-ssh-key
+# can be placed in the same directory as this sample, and it will be
+# used preferentially.
+#
+# Execution environment:
+# - Runs as root
+# Input:
+# - The public key is in a temporary file accessible via argv[1], in
+#   OpenSSH format
+# - argv[2], ... are the users to which we should grant access
+# Output:
+# - Exit 0 to accept the key, or nonzero to reject or on error
+#
+# This sample implementation should be suitable for any machine that
+# has the specified users. A production implementation would be similar
+# or even identical.
+
+set -e
+
+public_key="$1"
+shift
+
+echo "Installing public key '$public_key' for users: $*"
+
+for user in "$@"
+do
+    if pwent="$(getent passwd "$user")"
+    then
+        home="$(echo "$pwent" | cut -d: -f6)"
+        group="$(id -gn "$user")"
+        install -d -m 0755 -o "$user" -g "$group" "$home/.ssh"
+        if ! [ -e "$home/.ssh/authorized_keys" ]
+        then
+            install -m 0600 -o "$user" -g "$group" "$public_key" "$home/.ssh/authorized_keys"
+        else
+            if ! grep -qF "$(cut -d " " -f2 "$public_key")" "$home/.ssh/authorized_keys"
+            then
+                if [ -n "$(tail -1c "$home/.ssh/authorized_keys")" ]
+                then
+                    echo >> "$home/.ssh/authorized_keys"
+                fi
+                cat "$public_key" >> "$home/.ssh/authorized_keys"
+            fi
+        fi
+    fi
+done
+
+echo "Public key installed"
+
+exit 0

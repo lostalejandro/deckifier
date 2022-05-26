@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+# encoding: utf-8
+
+# This file is part of steamos-devkit
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright 2017-2018 Collabora Ltd
+#
+# This package is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This package is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this package.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+# Sample script run to identify the machine we are running on. This
+# is used by the devkit daemon to choose an identity for the machine,
+# and can also be run directly.
+#
+# A script or binary (written in any language) named devkit-1-identify
+# can be placed in the same directory as this sample, and it will be
+# used preferentially.
+#
+# Execution environment:
+# - Runs as root, or as an ordinary user who can run games
+# - Part of a non-interactive secure shell session
+# Input:
+# - None
+# Output:
+# - Exit 0 on success or nonzero on error
+# - On success, must print JSON to stdout containing one object with
+#   the following keys and string values, all of which are optional:
+#   - "machine_id": The hexadecimal systemd/D-Bus machine-id(5)
+#     (in the case of a conflict between systemd's /etc/machine-id and
+#     D-Bus' traditional /var/lib/dbus/machine-id, the systemd version
+#     should be preferred)
+#   - "hostname": The machine-readable hostname as set by sethostname(2)
+#   - "pretty_hostname": A human-friendly version of the hostname as
+#     found in systemd's machine-info(5)
+#   - "product_family", "product_name", "product_serial", "product_uuid",
+#     "sys_vendor": as for /sys/devices/virtual/dmi/id
+#   - "product": The best human-friendly description of the machine
+#     hardware we can devise, for example "Alienware ASM100"
+#   - "serial": The best hardware serial number we can devise
+#   - "machine_name": The best unique name for the machine that we can
+#     devise
+# - Any diagnostic messages must be printed to stderr only
+
+import json
+import os
+import re
+import socket
+import subprocess
+import sys
+
+_MACHINE_ID_RE = re.compile(r'^[0-9A-Fa-f]{32,32}$')
+_USELESS_HOSTNAMES = frozenset((
+    'debian',
+    'host',
+    'localhost',
+    'steamos',
+    'ubuntu',
+))
+# The case combination sometimes varies, so this is lowercased and we
+# use lower() to compare.
+_USELESS_DMI_NAMES = frozenset((
+    'to be filled by o.e.m.',
+))
+
+if __name__ == '__main__':
+
+    info = {}
+    steam_serialnumber = None
+
+    for k in ('product_family', 'product_name', 'product_serial',
+              'product_uuid', 'sys_vendor'):
+        try:
+            with open('/sys/devices/virtual/dmi/id/{}'.format(k)) as reader:
+                v = reader.read().strip()
+
+                if v and v.lower() not in _USELESS_DMI_NAMES:
+                    info[k] = v
+        except (IOError, OSError, UnicodeError):
+            pass
+
+    try:
+        for f in ('/etc/machine-id', '/var/lib/dbus/machine-id'):
+            with open(f) as reader:
+                v = reader.read().strip()
+
+                if _MACHINE_ID_RE.match(v):
+                    info['machine_id'] = v
+    except (IOError, OSError, UnicodeError):
+        pass
+
+    if 'product_family' in info and 'sys_vendor' in info:
+        info['product'] = '{sys_vendor} {product_family}'.format(**info)
+    elif 'product_name' in info and 'sys_vendor' in info:
+        info['product'] = '{sys_vendor} {product_name}'.format(**info)
+    elif 'product_family' in info:
+        info['product'] = info['product_family']
+    elif 'product_name' in info:
+        info['product'] = info['product_name']
+
+    if os.access('/usr/bin/steam_serialnumber.sh', os.X_OK):
+        try:
+            steam_serialnumber = subprocess.check_output([
+                'sudo', '-n', 'steam_serialnumber.sh',
+            ]).decode('utf-8').strip()
+        except (subprocess.CalledProcessError, UnicodeError):
+            pass
+
+    if os.access('/usr/bin/hostnamectl', os.X_OK):
+        try:
+            v = subprocess.check_output([
+                'hostnamectl', '--pretty',
+            ]).decode('utf-8').strip()
+        except (subprocess.CalledProcessError, UnicodeError):
+            pass
+        else:
+            if v:
+                info['pretty_hostname'] = v
+
+            v = subprocess.check_output([
+                'hostnamectl', '--static',
+            ]).decode('utf-8').strip()
+
+            if v:
+                info['hostname'] = v
+
+    if 'hostname' not in info:
+        try:
+            info['hostname'] = socket.gethostname()
+        except (IOError, OSError, UnicodeError):
+            pass
+
+    if steam_serialnumber:
+        info['serial'] = steam_serialnumber
+    elif 'product_serial' in info:
+        info['serial'] = info['product_serial']
+
+    if 'product' in info:
+        info['machine_name'] = info['product']
+
+    if 'hostname' in info and info['hostname'] not in _USELESS_HOSTNAMES:
+        info['machine_name'] = info['hostname']
+
+    if 'pretty_hostname' in info:
+        info['machine_name'] = info['pretty_hostname']
+
+    json.dump(info, sys.stdout, indent=4, sort_keys=True)
+    print()

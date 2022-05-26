@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import logging
+import tempfile
+from urllib.parse import quote_plus as urllib_quote_plus
+import subprocess
+
+logger = logging.getLogger(os.path.realpath(__file__))
+
+try:
+    import steam_devkit.utils
+except:
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    import steam_devkit.utils
+
+if __name__ == '__main__':
+    logger.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(logging.Formatter('%(name)s:%(message)s'))
+    logger.addHandler(ch)
+
+    request = open(sys.argv[1], 'rt').read()
+    requestIP = 'Unknown'
+    try:
+        requestIP = sys.argv[2]
+    except NameError:
+        logger.debug('request IP not given as argument to hook')
+        pass
+
+    if os.environ.get('DEVKIT_BYPASS_STEAM_PROMPT', None) == '1':
+        # Still using for the standalone dev-kit service application
+        logger.warning('Bypassing the Steam client approval - this is potentially insecure!')
+        MAGIC_PHRASE = '900b919520e4cf601998a71eec318fec'
+        tokens = request.split(' ')
+        if tokens[-1].strip('\n') != MAGIC_PHRASE:
+            raise Exception('Invalid request')
+        sys.exit(0)
+
+    key_identifier = request.split(' ')[2]
+    request = f'Development host at IP {requestIP} key: {key_identifier!r}'
+
+    steam_devkit.utils.validate_steam_client()
+
+    with tempfile.TemporaryDirectory(prefix='approve-ssh-key') as tempdir:
+        logger.debug('Issue approve-ssh-key request to the running Steam client')
+        response = os.path.join(tempdir, 'response')
+        cmd = 'approve-ssh-key?response={}&request={}'.format(
+            urllib_quote_plus(response),
+            urllib_quote_plus(request),
+        )
+        steam_devkit.utils.execute_steam_client_command(cmd)
+        with steam_devkit.utils.wait_on_file_response(response, timeout=30) as f:
+            logger.debug('Got response from Steam client')
+            # Make sure sshd is enabled to support development features
+            subprocess.check_call('sudo systemctl enable --now sshd', shell=True)

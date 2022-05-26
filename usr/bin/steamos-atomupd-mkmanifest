@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+
+# SPDX-License-Identifier: LGPL-2.1+
+#
+# Copyright © 2018-2019 Collabora Ltd
+#
+# This package is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This package is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this package.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+import argparse
+import os
+import sys
+
+if os.environ.get('IN_SOURCE_TREE'):
+    sys.path.insert(1, os.getcwd())
+    sys.dont_write_bytecode = True
+
+if __name__ == "__main__":
+    try:
+        from steamosatomupd.image import Image
+        from steamosatomupd.manifest import Manifest
+    except ModuleNotFoundError as e:
+        print('\n'.join([
+          "Module not found: {}.".format(e),
+          "If you're running from the source tree, set the",
+          "environment variable IN_SOURCE_TREE and try again.",
+        ]), file=sys.stderr)
+        sys.exit(1)
+
+    parser = argparse.ArgumentParser(
+        description='\n'.join([
+            "Create a manifest of the current system, using the os-release file.",
+            "Feel free to use the optional arguments to override the values from",
+            "the os-release file, in case you know better."
+        ]))
+    parser.add_argument('--product')
+    parser.add_argument('--release')
+    parser.add_argument('--variant')
+    parser.add_argument('--arch')
+    parser.add_argument('--version')
+    parser.add_argument('--buildid')
+    parser.add_argument('--checkpoint', action='store_true')
+
+    args = parser.parse_args()
+
+    try:
+        image = Image.from_os(args.product, args.release, args.variant, args.arch,
+                              args.version, args.buildid, args.checkpoint)
+    except Exception as e:
+        print("Failed to create manifest: {}".format(e), file=sys.stderr)
+        sys.exit(1)
+
+    manifest = Manifest(image)
+    manifest_string = manifest.to_string()
+    print("{}".format(manifest_string))

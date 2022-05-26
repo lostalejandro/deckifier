@@ -1,0 +1,8 @@
+{
+  "product": "steamos",
+  "release": "clockwerk",
+  "variant": "atomic",
+  "arch": "amd64",
+  "version": "snapshot",
+  "buildid": "20181101.1"
+}

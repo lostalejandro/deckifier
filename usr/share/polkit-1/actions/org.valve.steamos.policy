@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>Valve SteamOS</vendor>
+  <vendor_url>http://www.steampowered.com</vendor_url>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-format-sdcard">
+    <description>Run the steamos sdcard helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-format-sdcard</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-reboot-other">
+    <description>Run the steamos reboot helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-reboot-other</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-select-branch">
+    <description>Run the steamos select branch helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-select-branch</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-update">
+    <description>Run the steamos update helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-update</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers/jupiter-biosupdate">
+    <description>Run the jupiter bios update helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/jupiter-biosupdate</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-factory-reset-config">
+    <description>Run the steamos factory reset helper</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-factory-reset-config</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers/jupiter-get-als-gain">
+    <description>Get the jupiter ALS gain calibration data from bios</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/jupiter-get-als-gain</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-set-hostname">
+    <description>Set the hostname</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-set-hostname</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-set-timezone">
+    <description>Set the timezone</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-set-timezone</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-priv-write">
+    <description>Helper to write to a set of device nodes</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-priv-write</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-session-select">
+    <description>Helper to switch sessions</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-session-select</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-reboot-now">
+    <description>Get the jupiter ALS gain calibration data from bios</description>
+    <icon_name>package-x-generic</icon_name> 
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-reboot-now</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-restart-sddm">
+    <description>Restart SDDM</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-restart-sddm</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-enable-sshd">
+    <description>Enable the SSH server</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-enable-sshd</annotate>
+  </action>
+
+  <action id="org.valve.policykit.steamos.pkexec.run-steamos-polkit-helpers-steamos-disable-wireless-power-management">
+    <description>Disable wireless power management</description>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/steamos-polkit-helpers/steamos-disable-wireless-power-management</annotate>
+  </action>
+
+</policyconfig>
+

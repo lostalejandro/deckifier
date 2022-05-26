@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -euo pipefail
+
+info() { printf "%s\n" "$*" >&2; }
+die() { info "!! $*"; exit 1; }
+
+CURRENT_FIRMWARE_TIMESTAMP=1645057604
+CURRENT_FIRMWARE_FILE=/usr/share/jupiter_controller_fw_updater/EV2_REL_620D9644.bin
+
+FIRMWARE_TOOL=/usr/share/jupiter_controller_fw_updater/d21bootloader16.py
+
+checkmode=""
+
+if [[ $# -eq 1 && ${1-} = "--check" ]]; then
+  checkmode=1
+elif [[ $# -ne 0 ]]; then
+  die "Usage: $0 [--check]"
+fi
+
+# Enumerate devices
+devs=$("$FIRMWARE_TOOL" getdevicesjson) || die "Failed to enumerate devices"
+devjq() { jq "$@" <<< "$devs"; }
+
+# If multiple, no action (some dev situation?)
+count=$(devjq 'length')
+if [[ $count -gt 1 ]]; then
+  info "Multiple devices found, not performing check/update:"
+  devjq >&2
+  exit 1
+elif [[ $count -lt 1 ]]; then
+  die "No compatible devices found"
+fi
+
+# Bootloader?
+bootloader=$(devjq '.[0].is_bootloader | select(. != null)')
+build_timestamp=$(devjq '.[0].build_timestamp | select(. != null)')
+
+info "Found candidate device, build timestamp ${build_timestamp:-unknown}, bootloader $bootloader"
+devjq >&2
+
+needupdate=""
+
+if [[ $bootloader = "true" ]]; then
+  info "Device is in bootloader mode, update required"
+  needupdate=1
+else
+  if [[ -z $build_timestamp ]]; then
+    info "Warning: Unknown build timestamp"
+  fi
+
+  if [[ ${build_timestamp:-0} -lt $CURRENT_FIRMWARE_TIMESTAMP ]]; then
+    info "Device is running build '$build_timestamp', newest $CURRENT_FIRMWARE_TIMESTAMP, update required"
+    needupdate=1
+  elif [[ ${build_timestamp} -eq $CURRENT_FIRMWARE_TIMESTAMP ]]; then
+    info "Device is running latest build $CURRENT_FIRMWARE_TIMESTAMP, update NOT required"
+  else
+    info "Device is running build '$build_timestamp', newer than available build $CURRENT_FIRMWARE_TIMESTAMP, update NOT required"
+  fi
+fi
+
+# If no update needed, done
+[[ -n $needupdate ]] || exit 0
+
+# Done if check mode
+if [[ -n $checkmode ]]; then
+  info "  --check specified, not performing update"
+  # status code 7 to determine update-needed in check mode, vs general failure
+  exit 7
+fi
+
+# Otherwise, perform the udpate.
+
+# Add a handler to stop the updater if we die while it is running
+#  (because we can be run as a service, and get SIGTERM'd. The shell does not kill the foreground process in this case.)
+unset update_pid
+on_error() {
+  ret=$?
+  if [[ -n ${update_pid-} ]]; then
+    info "Interrupted, killing update process $update_pid"
+    kill $update_pid
+    wait
+    info "Update failed, attempting to reset controller..."
+    "$FIRMWARE_TOOL" reset || true
+  fi
+  info "!! Failed to apply firmware update, see above"
+  exit $ret
+}
+trap on_error EXIT
+
+# The background+wait is so our exit handler above can kill it if the script itself is asked to stop.  Because bash.
+"$FIRMWARE_TOOL" program "$CURRENT_FIRMWARE_FILE" &
+update_pid=$!
+wait $update_pid
+info "Firmware updated to $CURRENT_FIRMWARE_TIMESTAMP"
+trap - EXIT
