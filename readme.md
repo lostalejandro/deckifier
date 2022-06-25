@@ -32,7 +32,7 @@ Open a Terminal and do the following:
 ```
 git clone https://github.com/lostalejandro/deckifier.git
 cd deckifier
-chmod +x install.sh
+chmod +x deckifier.sh
 ./deckifier.sh --install
 ```
 you can also do --help instead to see a small summary of available options

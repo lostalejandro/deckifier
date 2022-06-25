@@ -1,0 +1,3 @@
+# Required for Jupiter
+
+GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} amd_iommu=off amdgpu.gttsize=8128 spi_amd.speed_dev=1 audit=0 fbcon=vc:2-6"

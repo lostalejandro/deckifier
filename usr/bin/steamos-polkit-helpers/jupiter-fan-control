@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -eu
+
+if [[ $EUID -ne 0 ]];
+then
+    exec pkexec --disable-internal-agent "$0" "$@"
+fi
+
+
+case "$1" in
+    --enable) systemctl start jupiter-fan-control.service ;;
+    --disable) systemctl stop jupiter-fan-control.service ;;
+    *) echo "Unknown option $1"; exit 22;;
+esac

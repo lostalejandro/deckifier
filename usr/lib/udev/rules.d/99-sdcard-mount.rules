@@ -1,0 +1,5 @@
+# Originally from https://serverfault.com/a/767079
+# Run a mount script through systemd on any mmcblk0p* activity
+
+KERNEL=="mmcblk0p[0-9]", ACTION=="add", RUN+="/bin/systemctl start sdcard-mount@%k.service"
+KERNEL=="mmcblk0p[0-9]", ACTION=="remove", RUN+="/bin/systemctl stop sdcard-mount@%k.service"

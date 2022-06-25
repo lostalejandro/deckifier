@@ -49,13 +49,13 @@ deckifierinstall() {
     archcheck
     echo -e " ${green}Installing deckifier, hang tight!${reset}"
     read -p -r "Please make sure the Multilib repository is enabled, otherwise, the installation will fail!"
-    sudo pacman -Sy steam gamescope jq dmidecode
+    sudo pacman -Sy steam jq dmidecode
     echo "Steam is installed. Running it for checking updates."
     read -p -r "Once it's done, close it and don't log in. After closing, press [ENTER] to continue."
     steam
     read -p -r "Steam update finished, close it and press [ENTER] to continue."
     echo -e "${green}Installing Mangohud and Steam Deck files."
-    yay -S mangohud
+    yay -S mangohud mangoapp
     sudo cp -r "{etc, usr}" "/"
     sudo chmod 0644 /usr/share/polkit-1/actions/org.val*
     sudo chmod +x "/usr/bin/{jupiter*, steamos*, mangoapp*, gamescope-session*, steamos-polkit-helpers/*}"

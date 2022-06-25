@@ -1,0 +1,18 @@
+[Unit]
+Description=Jupiter BIOS Update Service
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/jupiter-biosupdate --auto
+
+# Fail if we cannot update within 90 seconds.
+TimeoutStartSec=90
+TimeoutStopSec=10
+Restart=no
+
+# When a BIOS update actually happens, this process exits with a SIGTERM.
+SuccessExitStatus=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
