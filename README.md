@@ -14,7 +14,7 @@
 
 ***SteamOS session on any Arch-based distro!***
 
-This repository aims to add required SteamDeck's binaries for Gamescope Wayland session and other required components to Arch Linux.
+This repository aims to add required SteamDeck's binaries for Gamescope Wayland session with full "Switch to Desktop", "Game Mode" support and other required components to Arch Linux.
 
 This adds almost all of the required SteamOS dependencies, as well as FPS limiting, flyouts, performance overlay and so on.
 
