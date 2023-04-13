@@ -12,8 +12,6 @@ Actions=Store;Community;Library;Servers;Screenshots;News;Settings;BigPicture;Fri
 PrefersNonDefaultGPU=true
 X-KDE-RunOnDiscreteGpu=true
 
-Name[es_VE]=steam-runtime.desktop
-
 [Desktop Action Store]
 Name=Store
 Name[es]=Tienda
