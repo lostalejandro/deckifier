@@ -1,0 +1,5 @@
+#! /bin/bash
+
+sed -i "/autologin-session/c\autologin-session=$1" /etc/lightdm/lightdm.conf.d/10-gamescope-session.conf
+systemctl enable lightdm
+systemctl restart lightdm

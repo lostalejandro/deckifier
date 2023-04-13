@@ -1,3 +1,0 @@
-# Disable free space notifier. This can be removed after Plasma 5.23.1
-[Module-freespacenotifier]
-autoload=false

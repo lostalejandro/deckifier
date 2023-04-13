@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Game Mode
+Exec=steamos-session-select
+Icon=/usr/share/icons/valve/scalable/actions/return-to-game-mode.svg
+Terminal=false
+Type=Application
+StartupNotify=false

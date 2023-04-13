@@ -1,0 +1,59 @@
+[Desktop Entry]
+Name=Steam (Runtime)
+Comment=Application for managing and playing games on Steam
+Comment[es]=Aplicación para administrar y ejecutar juegos en Steam
+Exec=/usr/bin/steam-runtime %U
+Icon=steam
+Terminal=false
+Type=Application
+Categories=Network;FileTransfer;Game;
+MimeType=x-scheme-handler/steam;x-scheme-handler/steamlink;
+Actions=Store;Community;Library;Servers;Screenshots;News;Settings;BigPicture;Friends;
+PrefersNonDefaultGPU=true
+X-KDE-RunOnDiscreteGpu=true
+
+Name[es_VE]=steam-runtime.desktop
+
+[Desktop Action Store]
+Name=Store
+Name[es]=Tienda
+Exec=steam steam://store
+
+[Desktop Action Community]
+Name=Community
+Name[es]=Comunidad
+Exec=steam steam://url/SteamIDControlPage
+
+[Desktop Action Library]
+Name=Library
+Name[es]=Biblioteca
+Exec=steam steam://open/games
+
+[Desktop Action Servers]
+Name=Servers
+Name[es]=Servidores
+Exec=steam steam://open/servers
+
+[Desktop Action Screenshots]
+Name=Screenshots
+Name[es]=Capturas
+Exec=steam steam://open/screenshots
+
+[Desktop Action News]
+Name=News
+Name[es]=Noticias
+Exec=steam steam://open/news
+
+[Desktop Action Settings]
+Name=Settings
+Name[es]=Parámetros
+Exec=steam steam://open/settings
+
+[Desktop Action BigPicture]
+Name=Big Picture
+Exec=steam steam://open/bigpicture
+
+[Desktop Action Friends]
+Name=Friends
+Name[es]=Amigos
+Exec=steam steam://open/friends

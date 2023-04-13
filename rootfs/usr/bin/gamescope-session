@@ -1,0 +1,123 @@
+#! /bin/bash
+
+#chimera-session
+
+DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
+CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+SESSION_CONFIG="${CONFIG_HOME}/environment.d/gamescope-session.conf"
+SESSION_LIGHTDM_CONFIG="/etc/lightdm/lightdm.conf.d/10-gamescope-session.conf"
+SESSION_LIST=('desktop' 'desktop-xorg' 'gamepadui' 'opengamepadui' 'gamepadui-with-qam')
+SELECTED_SESSION="$1"
+
+
+mkdir -p "${CONFIG_HOME}/environment.d"
+
+function print_session_list() {
+	# detect active session
+	CURRENT_SESSION="unknown"
+	if grep "cinnamon" ${SESSION_LIGHTDM_CONFIG} &> /dev/null; then
+		CURRENT_SESSION="desktop"
+	fi
+
+	if grep "cinnamon" ${SESSION_LIGHTDM_CONFIG} &> /dev/null; then
+		CURRENT_SESSION="desktop-xorg"
+	fi
+
+	if grep "gamescope-session" ${SESSION_LIGHTDM_CONFIG} &> /dev/null; then
+		CURRENT_SESSION="gamepadui"
+	fi
+
+	if grep "opengamepadui-session" ${SESSION_LIGHTDM_CONFIG} &> /dev/null; then
+		CURRENT_SESSION="opengamepadui"
+	fi
+
+	if grep "gamescope-ogui-qam-session" ${SESSION_LIGHTDM_CONFIG} &> /dev/null; then
+		CURRENT_SESSION="gamepadui-with-qam"
+	fi
+
+
+	# print active and available sessions
+	for t in ${SESSION_LIST[@]}; do
+		if [ "${CURRENT_SESSION}" = "${t}" ]; then
+			echo "* $t"
+		else
+			echo "  $t"
+		fi
+	done
+}
+
+function clean_steam_shortcuts() {
+	# clear steam game desktop shortcut clutter
+	grep --files-with-matches "Exec=steam steam://rungameid/" ${DATA_HOME}/applications/* | tr '\n' '\0' | xargs -0 -I {} rm {}
+}
+
+function desktop() {
+	clean_steam_shortcuts
+
+	# switch to Desktop
+	sudo gamescope-session-use-lightdm cinnamon
+}
+
+function desktop_xorg() {
+	clean_steam_shortcuts
+
+	# switch to Desktop (Xorg)
+	sudo gamescope-session-use-lightdm cinnamon
+}
+
+function gamepadui() {
+	# switch to Gamepad/Deck UI (Gamescope/Wayland)
+	echo '' > ${SESSION_CONFIG}
+	sudo gamescope-session-use-lightdm gamescope-session
+}
+
+function opengamepadui() {
+	# switch to Gamepad/Deck UI (Gamescope/Wayland)
+	echo '' > ${SESSION_CONFIG}
+	sudo gamescope-session-use-lightdm opengamepadui-session
+}
+
+function gamepaduiqam() {
+	# switch to OpenGamepadUI (Gamescope/Wayland)
+	echo '' > ${SESSION_CONFIG}
+	sudo gamescope-session-use-lightdm gamescope-ogui-qam-session
+}
+
+function print_invalid_session() {
+	echo "Unknown or invalid session type: ${SELECTED_SESSION}"
+	echo
+	echo "Available session types:"
+	print_session_list
+}
+
+
+
+# print current and available sessions when no argument specified
+if [ -z "${SELECTED_SESSION}" ]; then
+	print_session_list
+	exit
+fi
+
+# print message when invalid session is specified
+if [[ ! "${SESSION_LIST[*]}" =~ "${SELECTED_SESSION}" ]]; then
+	print_invalid_session
+	exit
+fi
+
+# apply the specified session type
+if [ "${SELECTED_SESSION}" = "desktop" ]; then
+	echo "Switching to desktop"
+	desktop
+elif [ "${SELECTED_SESSION}" = "desktop-xorg" ]; then
+	echo "Switching to desktop-xorg"
+	desktop_xorg
+elif [ "${SELECTED_SESSION}" = "gamepadui" ]; then
+	echo "Switching to gamepadui"
+	gamepadui
+elif [ "${SELECTED_SESSION}" = "opengamepadui" ]; then
+	echo "Switching to opengamepadui"
+	opengamepadui
+elif [ "${SELECTED_SESSION}" = "gamepadui-with-qam" ]; then
+	echo "Switching to gamepadui with opengamepadui quick access menu"
+	gamepaduiqam
+fi
