@@ -34,15 +34,15 @@ Before installing, make sure the `multilib` repository is enabled in /etc/pacman
 groupadd -r autologin
 useradd -m ${USERNAME} -G autologin
 ```
+```
+echo "[Seat:*]
+autologin-user=${USERNAME}" > /etc/lightdm/lightdm.conf.d/00-autologin-user.conf
+```
 
 ## 2. Add needed sudo privileges
 ```
 echo "${USERNAME} ALL=(ALL) NOPASSWD: /usr/bin/dmidecode -t 11" > /etc/sudoers.d/steam
 echo "${USERNAME} ALL=(ALL) NOPASSWD: /usr/bin/gamescope-session-use-lightdm" > /etc/sudoers.d/gamescope
-```
-```
-echo "[Seat:*]
-autologin-user=${USERNAME}" > /etc/lightdm/lightdm.conf.d/00-autologin-user.conf
 ```
 
 ## 3. Cloning this repo and copy files with proper permissions
