@@ -68,6 +68,10 @@ At line 14 replace /home/alejandro with your username
 ctrl+O and Enter to Save
 ctrl+X to exit
 ```
+## 5. Reboot and enjoy SteamOS on ArchLinux!
+```
+reboot
+```
 
 # Credits:
 
