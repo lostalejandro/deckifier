@@ -26,7 +26,7 @@ This only works for ArchLinux running Cinnamon DE and LightDM as display manager
 <hr>
 
 # Pre-requisites
-Before installing, make sure the `multilib` repository is enabled in /etc/pacman.conf and `mangohud`, `lib32-mangohud` and `mangoapp` installed.
+Before installing, make sure the `multilib` repository is enabled in /etc/pacman.conf and `nano`, `mangohud`, `lib32-mangohud` and `mangoapp` installed.
 
 # Steps:
 ## 1. Enable autologin on LightDM
