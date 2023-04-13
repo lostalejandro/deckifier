@@ -47,7 +47,7 @@ autologin-user=${USERNAME}" > /etc/lightdm/lightdm.conf.d/00-autologin-user.conf
 
 ## 3. Cloning this repo and copy files with proper permissions
 ```
-git clone https://github.com/lostalejandro/archdeck.git && cd deckifier
+git clone https://github.com/lostalejandro/deckifier.git && cd deckifier
 ```
 ```
 cp -rf rootfs/usr/* /usr
