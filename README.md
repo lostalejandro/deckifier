@@ -14,7 +14,7 @@
 
 ***SteamOS session on any Arch-based distro!***
 
-This repository aims to add required SteamDeck's holo packages and binaries the Gamescope Wayland session and other required components to Arch Linux.
+This repository aims to add required SteamDeck's binaries for Gamescope Wayland session and other required components to Arch Linux.
 
 This adds almost all of the required SteamOS dependencies, as well as FPS limiting, flyouts, performance overlay and so on.
 
@@ -32,47 +32,30 @@ Before installing, make sure the `multilib` repository is enabled in /etc/pacman
 ## 1. Enable autologin on LightDM
 ```
 groupadd -r autologin
-```
-```
 useradd -m ${USERNAME} -G autologin
 ```
 
 ## 2. Add needed sudo privileges
 ```
 echo "${USERNAME} ALL=(ALL) NOPASSWD: /usr/bin/dmidecode -t 11" > /etc/sudoers.d/steam
-```
-```
 echo "${USERNAME} ALL=(ALL) NOPASSWD: /usr/bin/gamescope-session-use-lightdm" > /etc/sudoers.d/gamescope
 ```
 ```
 echo "[Seat:*]
-autologin-user=${USERNAME}
-" > /etc/lightdm/lightdm.conf.d/00-autologin-user.conf
+autologin-user=${USERNAME}" > /etc/lightdm/lightdm.conf.d/00-autologin-user.conf
 ```
 
 ## 3. Cloning this repo and copy files with proper permissions
 ```
-git clone https://github.com/lostalejandro/archdeck.git && cd archdeck
+git clone https://github.com/lostalejandro/archdeck.git && cd deckifier
 ```
 ```
 cp -rf rootfs/usr/* /usr
-```
-```
 cp -rf rootfs/etc/* /etc
-```
-```
 chmod 777 /usr/bin/jupiter-biosupdate
-```
-```
 chmod 777 /usr/bin/steamos-update
-```
-```
 chmod 777 /usr/bin/steamos-session-select
-```
-```
 gio set /usr/share/applications/org.valve.gamescope.desktop metadata::trusted true
-```
-```
 chmod a+x /usr/share/applications/org.valve.gamescope.desktop
 ```
 
@@ -82,11 +65,7 @@ cd /usr/share/polkit-1/actions && nano org.valve.steamvr.policy
 ```
 ```
 At line 14 replace /home/alejandro with your username
-```
-```
 ctrl+O and Enter to Save
-```
-```
 ctrl+X to exit
 ```
 
